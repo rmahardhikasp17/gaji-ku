@@ -225,38 +225,57 @@ const ResponsiveDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Financial Trend Section */}
+      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+          <TrendingUp className="h-5 w-5 mr-2 text-teal-600" />
+          <span className="truncate">Tren 7 Hari Terakhir</span>
+        </h2>
+        <div className="h-64 sm:h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={dailyData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: 12 }}
+                stroke="#9ca3af"
+              />
+              <YAxis
+                tickFormatter={(value) => `${value / 1000}k`}
+                tick={{ fontSize: 12 }}
+                stroke="#9ca3af"
+              />
+              <Tooltip
+                formatter={(value: number) => [formatCurrency(value), '']}
+                labelStyle={{ color: '#374151' }}
+                contentStyle={{ fontSize: '14px', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="income"
+                stroke="#14b8a6"
+                strokeWidth={2}
+                dot={{ fill: '#14b8a6', r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Pemasukan"
+              />
+              <Line
+                type="monotone"
+                dataKey="expense"
+                stroke="#ef4444"
+                strokeWidth={2}
+                dot={{ fill: '#ef4444', r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Pengeluaran"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       {/* Charts and Budget Alerts */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-        {/* Daily Chart */}
-        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
-            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            <span className="truncate">Tren 7 Hari Terakhir</span>
-          </h2>
-          <div className="h-48 sm:h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dailyData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="date" 
-                  tick={{ fontSize: 12 }}
-                  interval={0}
-                />
-                <YAxis 
-                  tickFormatter={(value) => `${value / 1000}k`}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip 
-                  formatter={(value: number) => [formatCurrency(value), '']}
-                  labelStyle={{ color: '#374151' }}
-                  contentStyle={{ fontSize: '14px' }}
-                />
-                <Bar dataKey="income" fill="#10B981" name="Pemasukan" />
-                <Bar dataKey="expense" fill="#EF4444" name="Pengeluaran" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
 
         {/* Target Progress (if any active targets) */}
         {getActiveTargetProgress().length > 0 && (
@@ -294,14 +313,14 @@ const ResponsiveDashboard: React.FC = () => {
         {/* Budget Progress */}
         <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
-            <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <AlertTriangle className="h-5 w-5 mr-2 text-orange-600" />
             <span className="truncate">Monitor Anggaran</span>
           </h2>
           {totalBudget > 0 && (
-            <div className="bg-blue-50 rounded-lg p-3 mb-4">
+            <div className="bg-teal-50 rounded-lg p-3 mb-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-blue-800">Total Anggaran Bulanan:</span>
-                <span className="text-sm font-bold text-blue-900">{formatCurrency(totalBudget)}</span>
+                <span className="text-sm font-medium text-teal-800">Total Anggaran Bulanan:</span>
+                <span className="text-sm font-bold text-teal-900">{formatCurrency(totalBudget)}</span>
               </div>
             </div>
           )}
@@ -315,7 +334,7 @@ const ResponsiveDashboard: React.FC = () => {
                   <div key={category.id} className="space-y-2">
                     <div className="flex justify-between items-start sm:items-center gap-2">
                       <div className="flex items-center space-x-2 min-w-0 flex-1">
-                        <div 
+                        <div
                           className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: category.color }}
                         ></div>
@@ -330,8 +349,8 @@ const ResponsiveDashboard: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <Progress 
-                      value={category.percentage} 
+                    <Progress
+                      value={category.percentage}
                       className="h-2"
                     />
                     {category.percentage >= 80 && (
@@ -347,25 +366,9 @@ const ResponsiveDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        {/* Quick Add Transaction */}
-        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
-            <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            <span className="truncate">Tambah Transaksi Cepat</span>
-          </h2>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="w-full bg-gradient-to-r from-emerald-500 to-blue-600 text-white py-3 px-4 rounded-lg hover:from-emerald-600 hover:to-blue-700 transition-all duration-200 font-medium flex items-center justify-center space-x-2"
-          >
-            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="text-sm sm:text-base">Tambah Transaksi Baru</span>
-          </button>
-        </div>
-
-        {/* Recent Transactions */}
-        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Transaksi Terbaru</h2>
+      {/* Recent Transactions */}
+      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Transaksi Terbaru</h2>
           <div className="space-y-3 sm:space-y-4">
             {recentTransactions.length === 0 ? (
               <p className="text-gray-500 text-center py-6 sm:py-8 text-sm sm:text-base">Belum ada transaksi</p>
@@ -400,9 +403,17 @@ const ResponsiveDashboard: React.FC = () => {
                 </div>
               ))
             )}
-          </div>
         </div>
       </div>
+
+      {/* Prominent Add Transaction Button */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="fixed bottom-6 right-6 lg:static lg:mt-6 bg-gradient-to-r from-teal-500 to-blue-600 text-white py-4 px-6 rounded-full lg:rounded-lg hover:from-teal-600 hover:to-blue-700 transition-all duration-200 font-semibold flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl w-14 h-14 lg:w-full lg:h-auto"
+      >
+        <Plus className="h-6 w-6 lg:h-5 lg:w-5" />
+        <span className="hidden lg:inline text-base">Tambah Transaksi Baru</span>
+      </button>
 
       {/* Transaction Form Modal */}
       <TransactionFormModal
