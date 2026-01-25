@@ -36,7 +36,8 @@ const ResponsiveDashboard: React.FC = () => {
   const { getActiveTargetProgress } = useTargetProgress();
   const { userSettings } = useUserSettings();
   const { totalBudget } = useTotalBudget();
-  
+  const { month, year, setMonth, setYear } = useDateFilter();
+
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
