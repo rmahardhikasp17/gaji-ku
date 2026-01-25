@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown, Calendar, FileText, Plus, TrendingUp, AlertTriangle } from 'lucide-react';
+import { ArrowUp, ArrowDown, User, Plus, TrendingUp, AlertTriangle } from 'lucide-react';
 import { Transaction, Category } from '../services/database';
 import { useTransactionsByPeriode } from '../hooks/useTransactionsByPeriode';
 import { useKategoriByPeriode } from '../hooks/useKategoriByPeriode';
@@ -10,8 +10,9 @@ import { useTargetProgress } from '@/hooks/useTargetProgress';
 import { useTotalBudget } from '@/hooks/useTotalBudget';
 import TransactionFormModal from './TransactionFormModal';
 import { toast } from 'sonner';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Progress } from '@/components/ui/progress';
+import { useDateFilter } from '../store/useDateFilter';
 
 interface DailyData {
   date: string;
