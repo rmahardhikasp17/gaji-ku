@@ -410,15 +410,18 @@ const ResponsiveDashboard: React.FC = () => {
               recentTransactions.map((transaction) => (
                 <div key={transaction.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg border border-blue-100">
                   <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                    <div className={`p-1.5 sm:p-2 rounded-full flex-shrink-0 ${
-                      transaction.type === 'income' ? 'bg-teal-100' : 'bg-red-100'
-                    }`}>
-                      {transaction.type === 'income' ? (
-                        <ArrowUp className={`h-3 w-3 sm:h-4 sm:w-4 text-teal-600`} />
-                      ) : (
-                        <ArrowDown className={`h-3 w-3 sm:h-4 sm:w-4 text-red-600`} />
-                      )}
-                    </div>
+                    {(() => {
+                      const IconComponent = getCategoryIcon(transaction.category);
+                      return (
+                        <div className={`p-1.5 sm:p-2 rounded-full flex-shrink-0 ${
+                          transaction.type === 'income' ? 'bg-teal-100' : 'bg-red-100'
+                        }`}>
+                          <IconComponent className={`h-4 w-4 sm:h-5 sm:w-5 ${
+                            transaction.type === 'income' ? 'text-teal-600' : 'text-red-600'
+                          }`} />
+                        </div>
+                      );
+                    })()}
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{transaction.description}</p>
                       <p className="text-xs sm:text-sm text-gray-500 truncate">{transaction.category}</p>
