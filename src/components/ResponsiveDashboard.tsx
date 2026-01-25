@@ -51,6 +51,25 @@ const ResponsiveDashboard: React.FC = () => {
     loadData();
   }, [refreshTrigger, allTransactions, categories]);
 
+  const getDateRange = (data: DailyData[]): string => {
+    if (data.length < 2) return '';
+    const firstDate = data[0].date;
+    const lastDate = data[data.length - 1].date;
+    return `${firstDate} - ${lastDate}`;
+  };
+
+  const getCategoryIcon = (category: string) => {
+    const lowerCategory = category.toLowerCase();
+    if (lowerCategory.includes('bensin') || lowerCategory.includes('transport')) return Car;
+    if (lowerCategory.includes('makanan') || lowerCategory.includes('kantin')) return Utensils;
+    if (lowerCategory.includes('shopee') || lowerCategory.includes('belanja')) return ShoppingBag;
+    if (lowerCategory.includes('kerja') || lowerCategory.includes('gaji')) return Briefcase;
+    if (lowerCategory.includes('hiburan')) return Heart;
+    if (lowerCategory.includes('listrik') || lowerCategory.includes('internet')) return Zap;
+    if (lowerCategory.includes('rumah')) return Home;
+    return Gift;
+  };
+
   const loadData = async () => {
     try {
       setIsLoading(true);
