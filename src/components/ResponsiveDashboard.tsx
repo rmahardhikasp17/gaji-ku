@@ -374,13 +374,13 @@ const ResponsiveDashboard: React.FC = () => {
               <p className="text-gray-500 text-center py-6 sm:py-8 text-sm sm:text-base">Belum ada transaksi</p>
             ) : (
               recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={transaction.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg border border-blue-100">
                   <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                     <div className={`p-1.5 sm:p-2 rounded-full flex-shrink-0 ${
-                      transaction.type === 'income' ? 'bg-emerald-100' : 'bg-red-100'
+                      transaction.type === 'income' ? 'bg-teal-100' : 'bg-red-100'
                     }`}>
                       {transaction.type === 'income' ? (
-                        <ArrowUp className={`h-3 w-3 sm:h-4 sm:w-4 text-emerald-600`} />
+                        <ArrowUp className={`h-3 w-3 sm:h-4 sm:w-4 text-teal-600`} />
                       ) : (
                         <ArrowDown className={`h-3 w-3 sm:h-4 sm:w-4 text-red-600`} />
                       )}
@@ -392,7 +392,7 @@ const ResponsiveDashboard: React.FC = () => {
                   </div>
                   <div className="text-right flex-shrink-0 ml-2">
                     <p className={`font-semibold text-sm sm:text-base ${
-                      transaction.type === 'income' ? 'text-emerald-600' : 'text-red-600'
+                      transaction.type === 'income' ? 'text-teal-600' : 'text-red-600'
                     }`}>
                       {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                     </p>
