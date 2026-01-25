@@ -192,8 +192,8 @@ const ResponsiveDashboard: React.FC = () => {
           <div className="flex gap-2">
             <div className="bg-white/10 px-3 py-1.5 rounded-lg flex items-center gap-1 text-xs sm:text-sm text-white border border-white/20 backdrop-blur">
               <select
-                value={month}
-                onChange={(e) => setMonth(Number(e.target.value))}
+                value={bulan}
+                onChange={(e) => setBulan(Number(e.target.value))}
                 className="bg-transparent text-white focus:outline-none w-12 appearance-none cursor-pointer"
               >
                 {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
@@ -204,8 +204,8 @@ const ResponsiveDashboard: React.FC = () => {
             </div>
             <div className="bg-white/10 px-3 py-1.5 rounded-lg flex items-center gap-1 text-xs sm:text-sm text-white border border-white/20 backdrop-blur">
               <select
-                value={year}
-                onChange={(e) => setYear(Number(e.target.value))}
+                value={tahun}
+                onChange={(e) => setTahun(Number(e.target.value))}
                 className="bg-transparent text-white focus:outline-none w-14 appearance-none cursor-pointer"
               >
                 {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => (
