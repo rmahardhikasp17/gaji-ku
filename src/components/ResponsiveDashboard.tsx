@@ -10,7 +10,7 @@ import { useTargetProgress } from '@/hooks/useTargetProgress';
 import { useTotalBudget } from '@/hooks/useTotalBudget';
 import TransactionFormModal from './TransactionFormModal';
 import { toast } from 'sonner';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 import { useDateFilter } from '../store/useDateFilter';
 
