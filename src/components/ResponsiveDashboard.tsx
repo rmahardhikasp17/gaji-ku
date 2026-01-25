@@ -151,52 +151,75 @@ const ResponsiveDashboard: React.FC = () => {
     );
   }
 
+  const balance = totalIncome - totalExpense;
+
   return (
     <div className="space-y-4 sm:space-y-6 pb-20 lg:pb-0">
-      {/* Welcome Message */}
-      <div className="bg-gradient-to-r from-emerald-500 to-blue-600 rounded-xl shadow-sm p-4 sm:p-6 text-white">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold">Selamat datang, {userSettings.userName}! 👋</h1>
-          <p className="text-emerald-100 mt-1 text-sm sm:text-base">Ringkasan keuangan Anda untuk {getFormattedSelection()}</p>
+      {/* Gradient Header with Greeting, Date Filters, and Profile */}
+      <div className="bg-gradient-to-r from-blue-600 to-teal-500 rounded-2xl shadow-lg p-6 sm:p-8 text-white">
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold">Selamat datang! 👋</h1>
+            <p className="text-blue-100 mt-2 text-sm sm:text-base">{userSettings.userName}</p>
+          </div>
+          <div className="bg-white bg-opacity-20 p-3 rounded-full">
+            <User className="h-6 w-6 sm:h-8 sm:w-8" />
+          </div>
+        </div>
+
+        {/* Date Filters */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div>
+            <label className="text-blue-100 text-xs block mb-2">Bulan</label>
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="w-full bg-white bg-opacity-20 text-white rounded-lg px-3 py-2 text-sm border border-blue-300 focus:outline-none focus:ring-2 focus:ring-white"
+            >
+              {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                <option key={m} value={m} className="text-gray-900">{m}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-blue-100 text-xs block mb-2">Tahun</label>
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="w-full bg-white bg-opacity-20 text-white rounded-lg px-3 py-2 text-sm border border-blue-300 focus:outline-none focus:ring-2 focus:ring-white"
+            >
+              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => (
+                <option key={y} value={y} className="text-gray-900">{y}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Large Balance Card */}
+        <div className="bg-white bg-opacity-15 rounded-xl p-4 sm:p-6 backdrop-blur">
+          <p className="text-blue-100 text-sm mb-2">Total Saldo</p>
+          <h2 className="text-4xl sm:text-5xl font-bold">{formatCurrency(balance)}</h2>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border-l-4 border-emerald-500">
-          <div className="flex items-center justify-between">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Pemasukan {getFormattedSelection()}</p>
-              <p className="text-lg sm:text-2xl font-bold text-gray-900 break-words">{formatCurrency(totalIncome)}</p>
-            </div>
-            <div className="bg-emerald-100 p-2 sm:p-3 rounded-full flex-shrink-0 ml-2">
-              <ArrowUp className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
+      {/* Income/Expense Summary Cards - Side by Side */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+          <div className="flex flex-col items-start">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Pemasukan</p>
+            <p className="text-lg sm:text-2xl font-bold text-teal-600 mb-4">{formatCurrency(totalIncome)}</p>
+            <div className="bg-teal-100 p-3 rounded-full">
+              <ArrowUp className="h-5 w-5 sm:h-6 sm:w-6 text-teal-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border-l-4 border-red-500">
-          <div className="flex items-center justify-between">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Pengeluaran {getFormattedSelection()}</p>
-              <p className="text-lg sm:text-2xl font-bold text-gray-900 break-words">{formatCurrency(totalExpense)}</p>
-            </div>
-            <div className="bg-red-100 p-2 sm:p-3 rounded-full flex-shrink-0 ml-2">
+        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+          <div className="flex flex-col items-start">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Pengeluaran</p>
+            <p className="text-lg sm:text-2xl font-bold text-red-600 mb-4">{formatCurrency(totalExpense)}</p>
+            <div className="bg-red-100 p-3 rounded-full">
               <ArrowDown className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border-l-4 border-blue-500 sm:col-span-2 lg:col-span-1">
-          <div className="flex items-center justify-between">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Saldo</p>
-              <p className={`text-lg sm:text-2xl font-bold break-words ${totalIncome - totalExpense >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                {formatCurrency(totalIncome - totalExpense)}
-              </p>
-            </div>
-            <div className="bg-blue-100 p-2 sm:p-3 rounded-full flex-shrink-0 ml-2">
-              <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
             </div>
           </div>
         </div>
