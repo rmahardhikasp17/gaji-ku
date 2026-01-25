@@ -252,7 +252,17 @@ const ResponsiveDashboard: React.FC = () => {
         </h2>
         <div className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={dailyData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+            <AreaChart data={dailyData} margin={{ top: 20, right: 5, left: 5, bottom: 5 }}>
+              <defs>
+                <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#14b8a6" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="date"
@@ -270,25 +280,27 @@ const ResponsiveDashboard: React.FC = () => {
                 contentStyle={{ fontSize: '14px', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
               />
               <Legend />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="income"
                 stroke="#14b8a6"
                 strokeWidth={2}
+                fill="url(#colorIncome)"
                 dot={{ fill: '#14b8a6', r: 4 }}
                 activeDot={{ r: 6 }}
                 name="Pemasukan"
               />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="expense"
                 stroke="#ef4444"
                 strokeWidth={2}
+                fill="url(#colorExpense)"
                 dot={{ fill: '#ef4444', r: 4 }}
                 activeDot={{ r: 6 }}
                 name="Pengeluaran"
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
