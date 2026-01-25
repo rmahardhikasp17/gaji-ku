@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown, User, Plus, TrendingUp, AlertTriangle } from 'lucide-react';
+import { ArrowUp, ArrowDown, User, Plus, TrendingUp, AlertTriangle, Car, ShoppingBag, Utensils, Briefcase, Heart, Zap, Home, Gift } from 'lucide-react';
 import { Transaction, Category } from '../services/database';
 import { useTransactionsByPeriode } from '../hooks/useTransactionsByPeriode';
 import { useKategoriByPeriode } from '../hooks/useKategoriByPeriode';
