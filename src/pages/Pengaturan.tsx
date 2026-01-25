@@ -501,7 +501,7 @@ const Pengaturan: React.FC = () => {
             <h2 className="font-semibold text-gray-800">Kelola Data</h2>
           </div>
 
-          <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+          <div className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
             <div className="flex items-center gap-4">
               <div className="p-2 bg-green-100 rounded-lg">
                 <Download size={20} className="text-green-500" />
@@ -515,9 +515,9 @@ const Pengaturan: React.FC = () => {
               <Download className="h-4 w-4" />
               Unduh
             </Button>
-          </button>
+          </div>
 
-          <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+          <div className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
             <div className="flex items-center gap-4">
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Upload size={20} className="text-blue-500" />
@@ -540,7 +540,7 @@ const Pengaturan: React.FC = () => {
                 Unggah
               </Button>
             </div>
-          </button>
+          </div>
 
           <div className="p-4 hover:bg-gray-50 transition-colors">
             <div className="flex items-center justify-between mb-4">
