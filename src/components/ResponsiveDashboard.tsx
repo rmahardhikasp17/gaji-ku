@@ -246,10 +246,13 @@ const ResponsiveDashboard: React.FC = () => {
 
       {/* Financial Trend Section */}
       <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
-          <TrendingUp className="h-5 w-5 mr-2 text-teal-600" />
-          <span className="truncate">Tren 7 Hari Terakhir</span>
-        </h2>
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center">
+            <TrendingUp className="h-5 w-5 mr-2 text-teal-600" />
+            <span className="truncate">Tren Keuangan</span>
+          </h2>
+          <span className="text-sm text-gray-500">{getDateRange(dailyData)}</span>
+        </div>
         <div className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={dailyData} margin={{ top: 20, right: 5, left: 5, bottom: 5 }}>
