@@ -46,6 +46,7 @@ const ResponsiveDashboard: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [dailyData, setDailyData] = useState<DailyData[]>([]);
   const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[]>([]);
+  const { bulan, tahun, setBulan, setTahun } = useDateFilter();
 
   useEffect(() => {
     loadData();
