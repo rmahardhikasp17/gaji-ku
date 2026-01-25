@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Download, Upload, Trash2, Sun, Moon, Monitor, User, Save, Mail, Bell } from 'lucide-react';
+import { Download, Upload, Trash2, Sun, Moon, Monitor, User, Save, Mail, Bell, Shield, Palette, Globe, CreditCard, ChevronRight } from 'lucide-react';
 import { db } from '@/services/database';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { emailService, EmailConfig } from '@/services/emailService';
