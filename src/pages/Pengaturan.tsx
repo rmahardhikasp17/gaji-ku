@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Download, Upload, Trash2, Sun, Moon, Monitor, User, Save, Mail, Bell } from 'lucide-react';
+import { Download, Upload, Trash2, Sun, Moon, Monitor, User, Save, Mail, Bell, Shield, Palette, Globe, CreditCard, ChevronRight } from 'lucide-react';
 import { db } from '@/services/database';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { emailService, EmailConfig } from '@/services/emailService';
@@ -268,46 +267,46 @@ const Pengaturan: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Pengaturan</h1>
-        <p className="text-gray-600">Kelola data dan tampilan aplikasi Anda</p>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Premium Gradient Header */}
+      <div className="bg-gradient-to-r from-emerald-500 to-blue-600 pt-12 pb-24 px-6">
+        <h1 className="text-2xl font-bold text-white">Pengaturan</h1>
+        <p className="text-emerald-100 text-sm">Kelola akun dan preferensi aplikasi Anda</p>
       </div>
 
-      {/* User Profile Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Profil Pengguna
-          </CardTitle>
-          <CardDescription>
-            Kelola informasi profil Anda
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      {/* Settings Content (Overlapping Card) */}
+      <div className="max-w-4xl mx-auto -mt-12 px-4 space-y-6">
+
+        {/* Section: Akun & Keamanan */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-4 border-b border-gray-50 bg-gray-50/50">
+            <h2 className="font-semibold text-gray-800">Akun & Keamanan</h2>
+          </div>
+          
           {editingProfile ? (
-            <div className="space-y-4">
+            <div className="p-6 space-y-4">
               <div>
-                <Label htmlFor="userName">Nama Pengguna</Label>
+                <Label htmlFor="userName" className="text-sm font-medium text-gray-700">Nama Pengguna</Label>
                 <Input
                   id="userName"
                   value={profileForm.userName}
                   onChange={(e) => setProfileForm(prev => ({ ...prev, userName: e.target.value }))}
                   placeholder="Masukkan nama Anda"
+                  className="mt-2"
                 />
               </div>
               <div>
-                <Label htmlFor="userEmail">Email (Opsional)</Label>
+                <Label htmlFor="userEmail" className="text-sm font-medium text-gray-700">Email (Opsional)</Label>
                 <Input
                   id="userEmail"
                   type="email"
                   value={profileForm.userEmail}
                   onChange={(e) => setProfileForm(prev => ({ ...prev, userEmail: e.target.value }))}
                   placeholder="nama@email.com"
+                  className="mt-2"
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 pt-4">
                 <Button onClick={handleSaveProfile} className="flex items-center gap-2">
                   <Save className="h-4 w-4" />
                   Simpan
@@ -318,142 +317,159 @@ const Pengaturan: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <h3 className="font-medium">Nama: {userSettings.userName}</h3>
-                  {userSettings.userEmail && (
-                    <p className="text-sm text-gray-600">Email: {userSettings.userEmail}</p>
-                  )}
+            <>
+              <SettingItem 
+                icon={<User size={20} className="text-blue-500" />} 
+                title="Profil Pengguna" 
+                desc={userSettings.userName || "Belum diatur"}
+                onAction={handleEditProfile}
+              />
+              <SettingItem 
+                icon={<Mail size={20} className="text-blue-500" />} 
+                title="Email" 
+                desc={userSettings.userEmail || "Belum diatur"}
+                onAction={handleEditProfile}
+              />
+            </>
+          )}
+        </section>
+
+        {/* Section: Preferensi */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-4 border-b border-gray-50 bg-gray-50/50">
+            <h2 className="font-semibold text-gray-800">Preferensi</h2>
+          </div>
+          
+          {/* Theme Settings */}
+          <div className="p-6 border-b border-gray-50">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-purple-100 rounded-lg mt-0.5">
+                  <Palette size={20} className="text-purple-500" />
                 </div>
-                <Button onClick={handleEditProfile} variant="outline">
-                  Edit Profil
-                </Button>
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-gray-900">Tema Aplikasi</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">Pilih mode gelap atau terang</p>
+                </div>
               </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Theme Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sun className="h-5 w-5" />
-            Pengaturan Tema
-          </CardTitle>
-          <CardDescription>
-            Pilih tampilan yang sesuai dengan preferensi Anda
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            <Button
-              variant={theme === 'light' ? 'default' : 'outline'}
-              onClick={() => handleThemeChange('light')}
-              className="flex items-center gap-2"
-            >
-              <Sun className="h-4 w-4" />
-              Terang
-            </Button>
-            <Button
-              variant={theme === 'dark' ? 'default' : 'outline'}
-              onClick={() => handleThemeChange('dark')}
-              className="flex items-center gap-2"
-            >
-              <Moon className="h-4 w-4" />
-              Gelap
-            </Button>
-            <Button
-              variant={theme === 'system' ? 'default' : 'outline'}
-              onClick={() => handleThemeChange('system')}
-              className="flex items-center gap-2"
-            >
-              <Monitor className="h-4 w-4" />
-              Sistem
-            </Button>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant={theme === 'light' ? 'default' : 'outline'}
+                onClick={() => handleThemeChange('light')}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Sun className="h-4 w-4" />
+                Terang
+              </Button>
+              <Button
+                variant={theme === 'dark' ? 'default' : 'outline'}
+                onClick={() => handleThemeChange('dark')}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Moon className="h-4 w-4" />
+                Gelap
+              </Button>
+              <Button
+                variant={theme === 'system' ? 'default' : 'outline'}
+                onClick={() => handleThemeChange('system')}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Monitor className="h-4 w-4" />
+                Sistem
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Email Notification Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Notifikasi Email
-          </CardTitle>
-          <CardDescription>
-            Konfigurasi email untuk menerima notifikasi otomatis
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          <SettingItem 
+            icon={<CreditCard size={20} className="text-teal-500" />} 
+            title="Mata Uang" 
+            desc="IDR (Rp) - Rupiah Indonesia"
+          />
+        </section>
+
+        {/* Section: Notifikasi & Pengaturan Lanjut */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-4 border-b border-gray-50 bg-gray-50/50">
+            <h2 className="font-semibold text-gray-800">Notifikasi</h2>
+          </div>
+
           {editingEmail ? (
-            <div className="space-y-4">
+            <div className="p-6 space-y-4">
               <div className="flex items-center space-x-2">
                 <Switch
                   id="email-enabled"
                   checked={emailForm.enabled}
                   onCheckedChange={(enabled) => setEmailForm(prev => ({ ...prev, enabled }))}
                 />
-                <Label htmlFor="email-enabled">Aktifkan notifikasi email</Label>
+                <Label htmlFor="email-enabled" className="text-sm font-medium">Aktifkan notifikasi email</Label>
               </div>
 
               {emailForm.enabled && (
                 <>
                   <div>
-                    <Label htmlFor="smtpHost">SMTP Host</Label>
+                    <Label htmlFor="smtpHost" className="text-sm font-medium text-gray-700">SMTP Host</Label>
                     <Input
                       id="smtpHost"
                       value={emailForm.smtpHost || ''}
                       onChange={(e) => setEmailForm(prev => ({ ...prev, smtpHost: e.target.value }))}
                       placeholder="smtp.gmail.com"
+                      className="mt-2"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="smtpPort">SMTP Port</Label>
-                    <Input
-                      id="smtpPort"
-                      type="number"
-                      value={emailForm.smtpPort || 587}
-                      onChange={(e) => setEmailForm(prev => ({ ...prev, smtpPort: parseInt(e.target.value) }))}
-                      placeholder="587"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="smtpPort" className="text-sm font-medium text-gray-700">SMTP Port</Label>
+                      <Input
+                        id="smtpPort"
+                        type="number"
+                        value={emailForm.smtpPort || 587}
+                        onChange={(e) => setEmailForm(prev => ({ ...prev, smtpPort: parseInt(e.target.value) }))}
+                        placeholder="587"
+                        className="mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="smtpUser" className="text-sm font-medium text-gray-700">Email/Username</Label>
+                      <Input
+                        id="smtpUser"
+                        type="email"
+                        value={emailForm.smtpUser || ''}
+                        onChange={(e) => setEmailForm(prev => ({ ...prev, smtpUser: e.target.value }))}
+                        placeholder="your.email@gmail.com"
+                        className="mt-2"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <Label htmlFor="smtpUser">Email/Username</Label>
-                    <Input
-                      id="smtpUser"
-                      type="email"
-                      value={emailForm.smtpUser || ''}
-                      onChange={(e) => setEmailForm(prev => ({ ...prev, smtpUser: e.target.value }))}
-                      placeholder="your.email@gmail.com"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="smtpPassword">Password/App Password</Label>
+                    <Label htmlFor="smtpPassword" className="text-sm font-medium text-gray-700">Password/App Password</Label>
                     <Input
                       id="smtpPassword"
                       type="password"
                       value={emailForm.smtpPassword || ''}
                       onChange={(e) => setEmailForm(prev => ({ ...prev, smtpPassword: e.target.value }))}
                       placeholder="Password atau App Password"
+                      className="mt-2"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="fromEmail">Email Pengirim</Label>
+                    <Label htmlFor="fromEmail" className="text-sm font-medium text-gray-700">Email Pengirim</Label>
                     <Input
                       id="fromEmail"
                       type="email"
                       value={emailForm.fromEmail || ''}
                       onChange={(e) => setEmailForm(prev => ({ ...prev, fromEmail: e.target.value }))}
                       placeholder="noreply@example.com"
+                      className="mt-2"
                     />
                   </div>
                 </>
               )}
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 pt-4 border-t border-gray-200">
                 <Button onClick={handleSaveEmail} className="flex items-center gap-2">
                   <Save className="h-4 w-4" />
                   Simpan
@@ -464,70 +480,52 @@ const Pengaturan: React.FC = () => {
                 {emailForm.enabled && (
                   <Button variant="outline" onClick={handleTestEmail} className="flex items-center gap-2">
                     <Bell className="h-4 w-4" />
-                    Test Koneksi
+                    Test
                   </Button>
                 )}
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <h3 className="font-medium">
-                    Status: {emailConfig.enabled ? '✅ Aktif' : '❌ Tidak Aktif'}
-                  </h3>
-                  {emailConfig.enabled && emailConfig.smtpHost && (
-                    <p className="text-sm text-gray-600">Host: {emailConfig.smtpHost}</p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    Notifikasi untuk: peringatan anggaran, target tercapai, laporan bulanan
-                  </p>
-                </div>
-                <Button onClick={handleEditEmail} variant="outline">
-                  Konfigurasi Email
-                </Button>
-              </div>
-
-              <div className="bg-blue-50 rounded-lg p-3">
-                <h4 className="font-medium text-blue-800 mb-2">💡 Tips Konfigurasi Email:</h4>
-                <ul className="list-disc list-inside space-y-1 text-blue-700 text-sm">
-                  <li>Untuk Gmail, gunakan App Password bukan password biasa</li>
-                  <li>Aktifkan 2-Factor Authentication dan buat App Password di akun Google</li>
-                  <li>SMTP Host Gmail: smtp.gmail.com, Port: 587</li>
-                  <li>Notifikasi akan dikirim ke email yang terdaftar di profil</li>
-                </ul>
-              </div>
-            </div>
+            <SettingItem 
+              icon={<Bell size={20} className="text-orange-500" />} 
+              title="Notifikasi Email" 
+              desc={emailConfig.enabled ? `✅ Aktif (${emailConfig.smtpHost})` : "❌ Belum dikonfigurasi"}
+              onAction={handleEditEmail}
+            />
           )}
-        </CardContent>
-      </Card>
+        </section>
 
-      {/* Data Management */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Kelola Data</CardTitle>
-          <CardDescription>
-            Backup, restore, atau reset data aplikasi Anda
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Export Data */}
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <h3 className="font-medium">Export Data</h3>
-              <p className="text-sm text-gray-600">Unduh backup data dalam format JSON</p>
+        {/* Section: Kelola Data */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-4 border-b border-gray-50 bg-gray-50/50">
+            <h2 className="font-semibold text-gray-800">Kelola Data</h2>
+          </div>
+
+          <div className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Download size={20} className="text-green-500" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-sm font-medium text-gray-900">Export Data</h3>
+                <p className="text-xs text-gray-500">Unduh backup dalam format JSON</p>
+              </div>
             </div>
-            <Button onClick={handleExportData} className="flex items-center gap-2">
+            <Button onClick={handleExportData} variant="outline" size="sm" className="flex items-center gap-2">
               <Download className="h-4 w-4" />
-              Unduh Data JSON
+              Unduh
             </Button>
           </div>
 
-          {/* Import Data */}
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <h3 className="font-medium">Import Data</h3>
-              <p className="text-sm text-gray-600">Pulihkan data dari file backup JSON</p>
+          <div className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Upload size={20} className="text-blue-500" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-sm font-medium text-gray-900">Import Data</h3>
+                <p className="text-xs text-gray-500">Pulihkan dari file backup JSON</p>
+              </div>
             </div>
             <div>
               <input
@@ -537,25 +535,28 @@ const Pengaturan: React.FC = () => {
                 onChange={handleImportData}
                 className="hidden"
               />
-              <Button asChild variant="outline" className="flex items-center gap-2">
-                <label htmlFor="import-file" className="cursor-pointer">
-                  <Upload className="h-4 w-4" />
-                  Unggah Data JSON
-                </label>
+              <Button variant="outline" size="sm" onClick={() => document.getElementById('import-file')?.click()} className="flex items-center gap-2">
+                <Upload className="h-4 w-4" />
+                Unggah
               </Button>
             </div>
           </div>
 
-          {/* Reset Data */}
-          <div className="flex items-center justify-between p-4 border rounded-lg border-red-200">
-            <div>
-              <h3 className="font-medium text-red-700">Reset Data</h3>
-              <p className="text-sm text-gray-600">Hapus semua data dari aplikasi</p>
+          <div className="p-4 hover:bg-gray-50 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <Trash2 size={20} className="text-red-500" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-sm font-medium text-gray-900">Reset Semua Data</h3>
+                  <p className="text-xs text-gray-500">Hapus seluruh data aplikasi</p>
+                </div>
+              </div>
             </div>
             <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="destructive" className="flex items-center gap-2">
-                  <Trash2 className="h-4 w-4" />
+                <Button variant="destructive" size="sm" className="w-full">
                   Hapus Semua Data
                 </Button>
               </DialogTrigger>
@@ -563,8 +564,7 @@ const Pengaturan: React.FC = () => {
                 <DialogHeader>
                   <DialogTitle>Konfirmasi Hapus Data</DialogTitle>
                   <DialogDescription>
-                    Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.
-                    Pastikan Anda telah membuat backup data terlebih dahulu.
+                    Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan. Pastikan Anda telah membuat backup data terlebih dahulu.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -586,35 +586,79 @@ const Pengaturan: React.FC = () => {
               </DialogContent>
             </Dialog>
           </div>
-        </CardContent>
-      </Card>
+        </section>
 
-      {/* Usage Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Informasi Penggunaan</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 text-sm text-gray-600">
-            <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-              <h4 className="font-medium text-blue-800 mb-2">Cara Menggunakan Aplikasi:</h4>
-              <ul className="list-disc list-inside space-y-1 text-blue-700">
-                <li>Gunakan menu <strong>Transaksi</strong> untuk menambah pemasukan dan pengeluaran</li>
-                <li>Atur <strong>Kategori</strong> untuk mengorganisir jenis transaksi</li>
-                <li>Pantau <strong>Laporan</strong> untuk analisis keuangan bulanan</li>
-                <li>Buat <strong>Target</strong> tabungan untuk mencapai tujuan keuangan</li>
-                <li>Gunakan filter tanggal untuk melihat data periode tertentu</li>
-              </ul>
-            </div>
-            <div className="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
-              <h4 className="font-medium text-green-800 mb-1">Tips Penggunaan:</h4>
-              <p className="text-green-700">Backup data secara berkala untuk keamanan dan gunakan export PDF untuk laporan</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Tips Section */}
+        <section className="bg-gradient-to-br from-blue-50 to-emerald-50 rounded-2xl shadow-sm border border-blue-100 p-6 mb-6">
+          <h2 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+            <span className="text-xl">💡</span> Tips Penggunaan
+          </h2>
+          <ul className="space-y-2 text-sm text-blue-800">
+            <li className="flex items-start gap-3">
+              <span className="mt-1">✓</span>
+              <span>Backup data secara berkala untuk keamanan</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-1">✓</span>
+              <span>Gunakan App Password untuk Gmail, bukan password biasa</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-1">✓</span>
+              <span>Notifikasi email akan dikirim ke email yang terdaftar</span>
+            </li>
+          </ul>
+        </section>
+
+      </div>
     </div>
   );
 };
+
+// Reusable Setting Item Component
+interface SettingItemProps {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  onAction?: () => void;
+  toggle?: boolean;
+  toggleValue?: boolean;
+  onToggleChange?: (value: boolean) => void;
+}
+
+const SettingItem: React.FC<SettingItemProps> = ({ 
+  icon, 
+  title, 
+  desc, 
+  onAction,
+  toggle = false,
+  toggleValue = false,
+  onToggleChange
+}) => (
+  <button 
+    onClick={onAction}
+    className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
+  >
+    <div className="flex items-center gap-4">
+      <div className="p-2 bg-gray-100 rounded-lg">{icon}</div>
+      <div className="text-left">
+        <h3 className="text-sm font-medium text-gray-900">{title}</h3>
+        <p className="text-xs text-gray-500">{desc}</p>
+      </div>
+    </div>
+    {toggle ? (
+      <div 
+        className="w-10 h-6 bg-teal-500 rounded-full flex items-center px-1 cursor-pointer"
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleChange?.(!toggleValue);
+        }}
+      >
+        <div className="w-4 h-4 bg-white rounded-full shadow-sm ml-auto" />
+      </div>
+    ) : (
+      <ChevronRight size={18} className="text-gray-400" />
+    )}
+  </button>
+);
 
 export default Pengaturan;
