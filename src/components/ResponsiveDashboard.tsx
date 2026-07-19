@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowUp, ArrowDown, User, Plus, TrendingUp, AlertTriangle, Car, ShoppingBag, Utensils, Briefcase, Heart, Zap, Home, Gift, ChevronDown } from 'lucide-react';
 import { Transaction, Category } from '../services/database';
 import { useTransactionsByPeriode } from '../hooks/useTransactionsByPeriode';
@@ -6,8 +6,7 @@ import { useKategoriByPeriode } from '../hooks/useKategoriByPeriode';
 import { useDateFilterHelper } from '../hooks/useDateFilterHelper';
 import { useUserSettings } from '../hooks/useUserSettings';
 import { formatCurrency } from '../utils/formatCurrency';
-import { useTargetProgress } from '@/hooks/useTargetProgress';
-import { useTotalBudget } from '@/hooks/useTotalBudget';
+import { useTargets } from '@/hooks/useTargets';
 import TransactionFormModal from './TransactionFormModal';
 import { toast } from 'sonner';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -33,10 +32,14 @@ const ResponsiveDashboard: React.FC = () => {
   const { transactions: allTransactions, getBalance } = useTransactionsByPeriode();
   const { categories } = useKategoriByPeriode();
   const { getFormattedSelection } = useDateFilterHelper();
-  const { getActiveTargetProgress } = useTargetProgress();
+  const { activeTargetProgress } = useTargets();
   const { userSettings } = useUserSettings();
-  const { totalBudget } = useTotalBudget();
-  const { month, year, setMonth, setYear } = useDateFilter();
+
+  const totalBudget = useMemo(() => {
+    return categories
+      .filter(cat => cat.type === 'expense' && cat.budgetLimit)
+      .reduce((sum, cat) => sum + (cat.budgetLimit || 0), 0);
+  }, [categories]);
 
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
   const [totalIncome, setTotalIncome] = useState(0);
@@ -364,14 +367,14 @@ const ResponsiveDashboard: React.FC = () => {
           </div>
 
           {/* Target Progress */}
-          {getActiveTargetProgress().length > 0 && (
+          {activeTargetProgress.length > 0 && (
             <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-gray-100">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <TrendingUp className="h-5 w-5 mr-2 text-teal-600" />
                 Target Tabungan Aktif
               </h2>
               <div className="space-y-3 sm:space-y-4">
-                {getActiveTargetProgress().slice(0, 3).map((tp) => (
+                {activeTargetProgress.slice(0, 3).map((tp) => (
                   <div key={tp.target.id} className="space-y-2">
                     <div className="flex justify-between items-start gap-2">
                       <div className="min-w-0 flex-1">
