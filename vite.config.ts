@@ -2,19 +2,16 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(() => ({
   server: {
     host: "::",
     port: 8080,
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
@@ -35,8 +32,8 @@ export default defineConfig(({ mode }) => ({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Gaji-ku',
-        short_name: 'Gaji-ku',
+        name: 'Gajiku',
+        short_name: 'Gajiku',
         description: 'Aplikasi manajemen keuangan pribadi',
         theme_color: '#16a34a',
         background_color: '#ffffff',
@@ -63,7 +60,7 @@ export default defineConfig(({ mode }) => ({
         ]
       }
     })
-  ].filter(Boolean),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

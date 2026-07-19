@@ -73,6 +73,9 @@ export const exportToPDF = async (data: ExportData) => {
   };
 
   // Header
+  pdf.setTextColor(100);
+  addText('Gajiku', pageWidth / 2, yPosition - 8, 10);
+  pdf.setTextColor(0);
   addText('LAPORAN KEUANGAN', pageWidth / 2, yPosition, 18, true);
   pdf.setTextColor(100);
   addText(data.periode, pageWidth / 2, yPosition + 10, 12);

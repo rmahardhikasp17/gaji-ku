@@ -9,36 +9,30 @@ export const useTransactionsByPeriode = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load transactions for current month/year
   const loadTransactions = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
     try {
+      const paddedMonth = String(bulan).padStart(2, '0');
+      const startDate   = `${tahun}-${paddedMonth}-01`;
+      const endDate     = `${tahun}-${paddedMonth}-31`;
+
       const transactionsFromDb = await db.transactions
-        .filter(transaction => {
-          const transactionDate = new Date(transaction.date);
-          return transactionDate.getMonth() + 1 === bulan && 
-                 transactionDate.getFullYear() === tahun;
-        })
+        .where('date')
+        .between(startDate, endDate, true, true)
         .toArray();
-      
-      // Sort by date (newest first)
+
       transactionsFromDb.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      
       setTransactions(transactionsFromDb);
     } catch (err) {
       const errorMessage = 'Gagal memuat transaksi';
       setError(errorMessage);
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive"
-      });
+      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   }, [bulan, tahun]);
+
 
   // Add new transaction
   const addTransaction = useCallback(async (transactionData: Omit<Transaction, 'id' | 'createdAt'>) => {

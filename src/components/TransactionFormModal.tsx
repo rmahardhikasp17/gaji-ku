@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Category, Transaction, db } from '../services/database';
 import { useKategoriByPeriode } from '../hooks/useKategoriByPeriode';
-import { useActiveTargets } from '../hooks/useActiveTargets';
+import { useTargets } from '../hooks/useTargets';
+import { useDateFilter } from '../store/useDateFilter';
 import { toast } from 'sonner';
 import { formatInputNumber, parseNumber } from '../utils/formatCurrency';
 
@@ -20,8 +22,11 @@ const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
   onTransactionSaved,
   editingTransaction
 }) => {
+  const navigate = useNavigate();
+  const { bulan, tahun } = useDateFilter();
   const { categories, loading: categoriesLoading } = useKategoriByPeriode();
-  const { activeTargets, loading: targetsLoading } = useActiveTargets();
+  const { activeTargetProgress, loading: targetsLoading } = useTargets();
+  const activeTargets = activeTargetProgress.map(tp => tp.target);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: '' as 'income' | 'expense' | 'transfer_to_target' | '',
@@ -202,51 +207,59 @@ const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
             onSubmit={handleSubmit}
             className="p-4 sm:p-6 space-y-4 sm:space-y-5"
           >
-            {/* 1. Transaction Type - First Field */}
+            {/* 1. Amount (Nominal) - Prominently at the top */}
             <div>
-              <label className="block text-sm sm:text-base font-medium text-gray-700 mb-3">
-                Jenis Transaksi
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1text-center">
+                Nominal
               </label>
-              <div className="grid grid-cols-1 gap-2">
-                <label className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="income"
-                    checked={formData.type === 'income'}
-                    onChange={(e) => handleTypeChange(e.target.value as 'income')}
-                    className="mr-3 text-emerald-600"
-                    disabled={isLoading}
-                  />
-                  <span className="text-emerald-600 font-medium text-sm sm:text-base break-words whitespace-normal">
-                    💰 Pemasukan
-                  </span>
-                </label>
-                <label className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="expense"
-                    checked={formData.type === 'expense'}
-                    onChange={(e) => handleTypeChange(e.target.value as 'expense')}
-                    className="mr-3 text-red-600"
-                    disabled={isLoading}
-                  />
-                  <span className="text-red-600 font-medium text-sm sm:text-base break-words whitespace-normal">
-                    💸 Pengeluaran
-                  </span>
-                </label>
-                <label className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="transfer_to_target"
-                    checked={formData.type === 'transfer_to_target'}
-                    onChange={(e) => handleTypeChange(e.target.value as 'transfer_to_target')}
-                    className="mr-3 text-blue-600"
-                    disabled={isLoading}
-                  />
-                  <span className="text-blue-600 font-medium text-sm sm:text-base break-words whitespace-normal">
-                    🎯 Setor ke Target
-                  </span>
-                </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium sm:text-lg">Rp</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.amount}
+                  onChange={(e) => {
+                    const formatted = formatInputNumber(e.target.value);
+                    setFormData({ ...formData, amount: formatted });
+                  }}
+                  className="w-full pl-12 pr-4 py-4 text-2xl sm:text-3xl font-bold text-gray-900 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-emerald-500 bg-gray-50 rounded-t-xl transition-colors"
+                  placeholder="0"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            {/* 2. Transaction Type - Segmented Control */}
+            <div>
+              <div className="flex bg-gray-100 p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => handleTypeChange('expense')}
+                  className={`flex-1 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all ${
+                    formData.type === 'expense' ? 'bg-white shadow-sm text-red-600' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Pengeluaran
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTypeChange('income')}
+                  className={`flex-1 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all ${
+                    formData.type === 'income' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Pemasukan
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTypeChange('transfer_to_target')}
+                  className={`flex-1 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all ${
+                    formData.type === 'transfer_to_target' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Ke Target
+                </button>
               </div>
             </div>
 
@@ -320,7 +333,23 @@ const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
                         </option>
                       ))}
                     </select>
-                    
+
+                    {/* C1 — Empty category guidance */}
+                    {filteredCategories.length === 0 && !categoriesLoading && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                        <p className="text-sm text-amber-700">
+                          Belum ada kategori {formData.type === 'income' ? 'pemasukan' : 'pengeluaran'} untuk bulan ini.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => { onClose(); navigate('/kategori'); }}
+                          className="text-sm font-medium text-amber-800 underline mt-1"
+                        >
+                          Buat kategori sekarang →
+                        </button>
+                      </div>
+                    )}
+
                     {filteredCategories.length > 0 && (
                       <div className="bg-gray-50 rounded-lg p-3">
                         <div className="text-xs sm:text-sm font-medium text-gray-600 mb-2">
@@ -331,8 +360,8 @@ const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
                             <span
                               key={`category-badge-${category.id}-${index}`}
                               className={`inline-flex items-center px-2 py-1 rounded-full font-medium break-words ${
-                                formData.type === 'income' 
-                                  ? 'bg-emerald-100 text-emerald-800 text-xs leading-tight' 
+                                formData.type === 'income'
+                                  ? 'bg-emerald-100 text-emerald-800 text-xs leading-tight'
                                   : 'bg-red-100 text-red-800 text-xs leading-tight'
                               }`}
                               title={category.name}
@@ -350,83 +379,85 @@ const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
               )
             )}
 
-            {/* 3. Description */}
-            <div>
-              <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
-                Nama/Deskripsi
-              </label>
-              <input
-                type="text"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-3 py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Contoh: Makan siang, Gaji bulanan, dll."
-                required
-                disabled={isLoading}
-              />
+            {/* Description & Date Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi</label>
+                <input
+                  type="text"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50 transition-colors"
+                  placeholder="Cth: Makan Siang"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Tanggal</label>
+                <input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50 transition-colors"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
             </div>
 
-            {/* 4. Amount */}
-            <div>
-              <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
-                Nominal (Rp)
-              </label>
-              <input
-                type="text"
-                value={formData.amount}
-                onChange={(e) => {
-                  const formatted = formatInputNumber(e.target.value);
-                  setFormData({ ...formData, amount: formatted });
-                }}
-                className="w-full px-3 py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="0"
-                required
-                disabled={isLoading}
-              />
-            </div>
+            {/* L6 — Date-period mismatch warning */}
+            {(() => {
+              const txDate = new Date(formData.date);
+              const txMonth = txDate.getMonth() + 1;
+              const txYear  = txDate.getFullYear();
+              const mismatch = formData.date && (txMonth !== bulan || txYear !== tahun);
+              return mismatch ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm text-blue-700">
+                    ⚠️ Tanggal transaksi berbeda dengan periode yang sedang dilihat ({String(bulan).padStart(2,'0')}/{tahun}).
+                    Transaksi akan tersimpan di bulan/tahun sesuai tanggal yang dipilih.
+                  </p>
+                </div>
+              ) : null;
+            })()}
 
-            {/* 5. Date */}
-            <div>
-              <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
-                Tanggal
-              </label>
-              <input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full px-3 py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                required
-                disabled={isLoading}
-              />
-            </div>
+
 
             {/* Form Buttons */}
-            <div className="flex space-x-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isLoading}
-                className="flex-1 px-4 py-3 text-sm sm:text-base font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Batal
-              </button>
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={!isFormValid() || isLoading}
-                className="flex-1 bg-gradient-to-r from-emerald-500 to-blue-600 text-white py-3 px-4 rounded-lg hover:from-emerald-600 hover:to-blue-700 transition-all duration-200 font-medium text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-emerald-500 text-white py-3.5 px-4 rounded-xl hover:bg-emerald-600 transition-colors duration-200 font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-sm"
               >
-                {isLoading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Menyimpan...
-                  </>
-                ) : (
-                  editingTransaction ? 'Update' : 'Simpan'
-                )}
+                {isLoading ? 'Menyimpan...' : editingTransaction ? 'Simpan Perubahan' : 'Catat Transaksi'}
               </button>
+
+              {editingTransaction && (
+                <button
+                  type="button"
+                  disabled={isLoading}
+                  onClick={async () => {
+                    const ok = window.confirm('Hapus transaksi ini permanen?');
+                    if (!ok) return;
+                    setIsLoading(true);
+                    try {
+                      await db.transactions.delete(editingTransaction.id!);
+                      toast.success('Transaksi dihapus');
+                      onTransactionSaved();
+                      onClose();
+                    } catch (e) {
+                      toast.error('Gagal menghapus');
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                  className="w-full mt-3 py-3 px-4 text-red-500 hover:text-red-700 hover:bg-red-50 font-medium text-sm rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Hapus Transaksi
+                </button>
+              )}
             </div>
           </form>
         </div>

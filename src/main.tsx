@@ -4,20 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import { initializeDatabase } from './services/database'
 
-// Initialize database
+// Initialize database with default categories for current month
 initializeDatabase().catch(console.error);
-
-// Register service worker for PWA
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('SW registered: ', registration);
-      })
-      .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
-}
 
 createRoot(document.getElementById("root")!).render(<App />);

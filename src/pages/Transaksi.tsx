@@ -1,33 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Filter } from 'lucide-react';
-import { Category, Transaction, initializeDatabase } from '../services/database';
-import { db } from '../services/database';
+import { Category, Transaction } from '../services/database';
+import { useKategoriByPeriode } from '../hooks/useKategoriByPeriode';
 import TransactionList from '../components/TransactionList';
 import TransactionFormModal from '../components/TransactionFormModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
 const Transaksi: React.FC = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { categories } = useKategoriByPeriode();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [listRefreshKey, setListRefreshKey] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
 
-  useEffect(() => {
-    loadCategories();
-  }, []);
+  // Unique category names for filter — period-scoped and consistent with the transaction list
+  const filteredCategories = useMemo(() => {
+    const byType = selectedType === 'all' ? categories
+      : selectedType === 'transfer_to_target' ? []
+      : categories.filter(c => c.type === selectedType);
+    return Array.from(new Map(byType.map(c => [c.name, c])).values());
+  }, [categories, selectedType]);
 
-  const loadCategories = async () => {
-    try {
-      await initializeDatabase();
-      const categoryData = await db.categories.toArray();
-      setCategories(categoryData);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-    }
-  };
 
   const handleEditTransaction = (transaction: Transaction) => {
     setEditingTransaction(transaction);
@@ -35,7 +30,7 @@ const Transaksi: React.FC = () => {
   };
 
   const handleTransactionSaved = () => {
-    setRefreshTrigger(prev => prev + 1);
+    setListRefreshKey(prev => prev + 1);
     setEditingTransaction(null);
   };
 
@@ -94,18 +89,7 @@ const Transaksi: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent className="bg-white z-50 max-h-[200px] overflow-y-auto">
                     <SelectItem value="all">Semua Kategori</SelectItem>
-                    {(() => {
-                      // Filter categories based on selected type and remove duplicates
-                      const filteredCategories = selectedType === 'all' ? categories : 
-                        selectedType === 'transfer_to_target' ? [] :
-                        categories.filter(cat => cat.type === selectedType);
-                      
-                      // Remove duplicates by creating a Map with unique names
-                      const uniqueCategories = Array.from(
-                        new Map(filteredCategories.map(cat => [cat.name, cat])).values()
-                      );
-                      
-                      return uniqueCategories.map((category) => (
+                    {filteredCategories.map((category) => (
                         <SelectItem key={category.id} value={category.name}>
                           <div className="flex items-center gap-2">
                             <div
@@ -117,8 +101,7 @@ const Transaksi: React.FC = () => {
                             </span>
                           </div>
                         </SelectItem>
-                      ));
-                    })()}
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -142,7 +125,8 @@ const Transaksi: React.FC = () => {
       {/* Transaction List */}
       <TransactionList
         onEditTransaction={handleEditTransaction}
-        refreshTrigger={refreshTrigger}
+        onAddTransaction={() => setIsModalOpen(true)}
+        refreshTrigger={listRefreshKey}
         categoryFilter={selectedCategory}
         typeFilter={selectedType}
       />

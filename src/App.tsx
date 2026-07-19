@@ -1,8 +1,9 @@
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import Transaksi from "./pages/Transaksi";
 import Kategori from "./pages/Kategori";
@@ -13,53 +14,86 @@ import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import OfflineIndicator from "./components/OfflineIndicator";
+import BootingScreen from "./components/BootingScreen";
+import { initializeDatabase } from "./services/database";
 
-const queryClient = new QueryClient();
+const App = () => {
+  const [dbReady, setDbReady] = useState(false);
+  const [showBooting, setShowBooting] = useState(true);
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+  useEffect(() => {
+    initializeDatabase()
+      .then(() => {
+        setDbReady(true);
+      })
+      .catch((err) => {
+        console.error("Gagal menginisialisasi database:", err);
+        setDbReady(true); // Tetap bypass agar pengguna tidak stuck
+      });
+  }, []);
+
+  return (
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <OfflineIndicator />
-      <PWAInstallPrompt />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={
-            <Layout>
-              <Index />
-            </Layout>
-          } />
-          <Route path="/transaksi" element={
-            <Layout>
-              <Transaksi />
-            </Layout>
-          } />
-          <Route path="/kategori" element={
-            <Layout>
-              <Kategori />
-            </Layout>
-          } />
-          <Route path="/laporan" element={
-            <Layout>
-              <Laporan />
-            </Layout>
-          } />
-          <Route path="/pengaturan" element={
-            <Layout>
-              <Pengaturan />
-            </Layout>
-          } />
-          <Route path="/target" element={
-            <Layout>
-              <Target />
-            </Layout>
-          } />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AnimatePresence mode="wait">
+        {showBooting ? (
+          <BootingScreen
+            key="booting"
+            dbReady={dbReady}
+            onComplete={() => setShowBooting(false)}
+          />
+        ) : (
+          <motion.div
+            key="app-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="min-h-screen flex flex-col"
+          >
+            <Toaster />
+            <Sonner />
+            <OfflineIndicator />
+            <PWAInstallPrompt />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={
+                  <Layout>
+                    <Index />
+                  </Layout>
+                } />
+                <Route path="/transaksi" element={
+                  <Layout>
+                    <Transaksi />
+                  </Layout>
+                } />
+                <Route path="/kategori" element={
+                  <Layout>
+                    <Kategori />
+                  </Layout>
+                } />
+                <Route path="/laporan" element={
+                  <Layout>
+                    <Laporan />
+                  </Layout>
+                } />
+                <Route path="/pengaturan" element={
+                  <Layout>
+                    <Pengaturan />
+                  </Layout>
+                } />
+                <Route path="/target" element={
+                  <Layout>
+                    <Target />
+                  </Layout>
+                } />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </TooltipProvider>
-  </QueryClientProvider>
-);
+  );
+};
 
 export default App;
+
